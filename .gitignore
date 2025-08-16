@@ -1,6 +1,6 @@
 ﻿venv
 node_modules
 .vscode
-controle_pedidos/controle_pedidos/__pycache__
-controle_pedidos/pedidos/__pycache__
-controle_pedidos/pedidos/migrations/__pycache__
+backend/app/__pycache__
+backend/cash_flow/__pycache__
+backend/cash_flow/migrations/__pycache__

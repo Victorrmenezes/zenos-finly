@@ -1,5 +1,5 @@
 {
-  "name": "controle_pedidos",
+  "name": "zenos_finly",
   "version": "1.0.0",
   "description": "Sistema de controle de pedidos com Django + TailwindCSS",
   "scripts": {
