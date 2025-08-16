@@ -91,7 +91,6 @@ class Transaction(models.Model):
         ('CANCELLED', 'Cancelled'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="transactions")
     bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE, related_name="transactions", null=True, blank=True)
     invoice = models.ForeignKey(CreditCardInvoice, on_delete=models.SET_NULL, null=True, blank=True, related_name="transactions")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="transactions")
@@ -120,7 +119,6 @@ class RecurringTransaction(models.Model):
         ('CUSTOM', 'Custom'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recurring_transactions")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="recurring_transactions")
 
     description = models.CharField(max_length=255)
