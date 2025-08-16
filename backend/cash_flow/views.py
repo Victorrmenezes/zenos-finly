@@ -2,23 +2,30 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import transaction
+from django.db.models import Sum
+
+from cash_flow.models import Transaction
 
 # from .models import Customer, Order, OrderItem, Product
 
 def home(request):
-    # search = request.GET.get('q', '')
+    search = request.GET.get('q', '')
 
-    # orders = Order.objects.all().order_by('-created_at')
+    transactions = Transaction.objects.all().order_by('-date')
 
-    # if search:
-    #     orders = orders.filter(cliente__icontains=search) | orders.filter(produto__icontains=search)
+    if search:
+        transactions = transactions.filter(category__name__icontains=search) | transactions.filter(bank_account__name__icontains=search)
 
-    # paginator = Paginator(orders, 10)
-    # page_number = request.GET.get('page')
-    # page_obj = paginator.get_page(page_number)
+    paginator = Paginator(transactions, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    amount = transactions.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
 
     return render(request, 'home.html', {
-        'orders': []
+        'transactions': page_obj,
+        'total_accounts': amount,
+        'user': request.user,
     })
 
 def stock(request):
@@ -37,7 +44,7 @@ def stock(request):
         'stock': []
     })
 
-def add_order(request):
+def add_transaction(request):
     # customers = Customer.objects.all()
     # products = Product.objects.all()
 
@@ -88,25 +95,25 @@ def add_order(request):
     #     # Tudo validado: salvar pedido e itens atomicalmente
     #     try:
     #         with transaction.atomic():
-    #             order = Order.objects.create(
+    #             transaction = transaction.objects.create(
     #                 customer=customer,
     #                 status='OPEN',
     #                 total_value=total_value,
     #             )
     #             for item in itens:
-    #                 OrderItem.objects.create(
-    #                     order=order,
+    #                 transactionItem.objects.create(
+    #                     transaction=transaction,
     #                     product=item['product'],
     #                     quantity=item['quantity'],
     #                     unit_price=item['unit_price'],
     #                     discount=item['discount'],
     #                 )
-    #         messages.success(request, f"Pedido #{order.id} criado com sucesso!")
+    #         messages.success(request, f"Pedido #{transaction.id} criado com sucesso!")
     #         return redirect('listar_pedidos')  # ajuste essa URL conforme seu projeto
     #     except Exception as e:
     #         messages.error(request, f"Erro ao salvar o pedido: {e}")
 
-    return render(request, 'order_form.html', {
+    return render(request, 'transaction_form.html', {
         'customers': [],
         'products': [],
     })
@@ -132,10 +139,10 @@ def add_product(request):
     #     return redirect("stock")
     return render(request, "product_form.html")
 
-def update_order(request, order_id):
+def update_transaction(request, transaction_id):
     return home(request)
 
-def delete_order(request, order_id):
+def delete_transaction(request, transaction_id):
     return home(request)
 
 def update_stock(request, product_id):
