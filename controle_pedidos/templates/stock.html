@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Estoque{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-2xl font-semibold">Estoque</h2>
+  <a href="/adicionar-produto/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+    Adicionar produto
+  </a>
+</div>
+
+<!-- Barra de busca -->
+<form method="GET" class="mb-4 flex flex-wrap gap-2">
+    <input type="text" name="q" value="{{ request.GET.q }}" 
+        placeholder="Buscar por cliente ou produto..." 
+        class="flex-1 min-w-[250px] px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
+    <button type="submit" 
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        Buscar
+    </button>
+</form>
+
+{% if stock %}
+<div class="overflow-x-auto">
+    <table class="min-w-full border border-gray-200 rounded-lg shadow">
+        <thead class="bg-blue-600 text-white">
+            <tr>
+                <th class="px-4 py-2 text-left">ID</th>
+                <th class="px-4 py-2 text-left">Produto</th>
+                <th class="px-4 py-2 text-left">Quantidade</th>
+                <th class="px-4 py-2 text-left">Preço de venda</th>
+                <th class="px-4 py-2 text-left">Custo</th>
+                <th class="px-4 py-2 text-left">Ações</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for product in stock %}
+            <tr class="hover:bg-gray-50 transition">
+                <td class="px-4 py-2">{{ product.id }}</td>
+                <td class="px-4 py-2">{{ product.name }}</td>
+                <td class="px-4 py-2">{{ product.stock_quantity }}</td>
+                <td class="px-4 py-2">{{ product.sale_price }}</td>
+                <td class="px-4 py-2">{{ product.cost_price }}</td>
+                <td class="px-4 py-2 space-x-2">
+                    <a href="{% url 'update_stock' product.id %}" 
+                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Paginação -->
+<div class="mt-4 flex justify-center space-x-2">
+    {% if orders.has_previous %}
+        <a href="?q={{ request.GET.q }}&page=1" 
+           class="px-3 py-1 border rounded hover:bg-gray-200">« Primeiro</a>
+        <a href="?q={{ request.GET.q }}&page={{ orders.previous_page_number }}" 
+           class="px-3 py-1 border rounded hover:bg-gray-200">‹ Anterior</a>
+    {% endif %}
+
+    <span class="px-3 py-1 border rounded bg-gray-100">
+        Página {{ orders.number }} de {{ orders.paginator.num_pages }}
+    </span>
+
+    {% if orders.has_next %}
+        <a href="?q={{ request.GET.q }}&page={{ orders.next_page_number }}" 
+           class="px-3 py-1 border rounded hover:bg-gray-200">Próxima ›</a>
+        <a href="?q={{ request.GET.q }}&page={{ orders.paginator.num_pages }}" 
+           class="px-3 py-1 border rounded hover:bg-gray-200">Última »</a>
+    {% endif %}
+</div>
+
+{% else %}
+<div class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-3 rounded">
+    Nenhum produto em estoque.
+</div>
+{% endif %}
+{% endblock %}

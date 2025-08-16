@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Controle de Pedidos{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header>
+        <nav class="bg-blue-600 shadow-md">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <h1 class="text-white text-xl font-bold">Controle de Pedidos</h1>
+                <div class="space-x-4">
+                    <a href="/" class="text-white hover:bg-blue-500 px-3 py-2 rounded transition">Pedidos</a>
+                    <a href="/estoque/" class="text-white hover:bg-blue-500 px-3 py-2 rounded transition">Gerenciar estoque</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 flex-grow">
+        <div class="bg-white rounded-lg shadow p-6">
+            {% block content %}
+            <!-- Conteúdo específico de cada página -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-4 mt-6">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2025 - Sistema de Pedidos</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Produto{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6">Adicionar Produto</h2>
+
+    <form method="post" class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Nome do Produto</label>
+            <input type="text" name="name" id="name" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                       focus:ring-blue-500 focus:border-blue-500 px-3 py-2" />
+        </div>
+
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
+            <textarea name="description" id="description" rows="3"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                       focus:ring-blue-500 focus:border-blue-500 px-3 py-2 resize-y"></textarea>
+        </div>
+
+        <div>
+            <label for="sale_price" class="block text-sm font-medium text-gray-700">Preço de Venda</label>
+            <input type="number" step="0.01" min="0" name="sale_price" id="sale_price" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                       focus:ring-blue-500 focus:border-blue-500 px-3 py-2" />
+        </div>
+
+        <div>
+            <label for="cost_price" class="block text-sm font-medium text-gray-700">Preço de Custo</label>
+            <input type="number" step="0.01" min="0" name="cost_price" id="cost_price" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                       focus:ring-blue-500 focus:border-blue-500 px-3 py-2" />
+        </div>
+
+        <div>
+            <label for="stock_quantity" class="block text-sm font-medium text-gray-700">Quantidade em Estoque</label>
+            <input type="number" min="0" name="stock_quantity" id="stock_quantity" required
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                       focus:ring-blue-500 focus:border-blue-500 px-3 py-2" />
+        </div>
+
+        <div>
+            <label for="category" class="block text-sm font-medium text-gray-700">Categoria</label>
+            <select name="category" id="category"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                    focus:ring-blue-500 focus:border-blue-500 px-3 py-2 bg-white">
+                <option value="" selected>-- Nenhuma categoria --</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="supplier" class="block text-sm font-medium text-gray-700">Fornecedor</label>
+            <select name="supplier" id="supplier"
+                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                    focus:ring-blue-500 focus:border-blue-500 px-3 py-2 bg-white">
+                <option value="" selected>-- Nenhum fornecedor --</option>
+                {% for sup in suppliers %}
+                <option value="{{ sup.id }}">{{ sup.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <button type="submit"
+            class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">
+            Salvar Produto
+        </button>
+    </form>
+</div>
+{% endblock %}
