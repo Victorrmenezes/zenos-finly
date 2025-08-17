@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 
-from backend.cash_flow.api import AccountManager
+from cash_flow.api.bank_account_manager import AccountManager
 from ..models import Transaction, BankAccount
 
 class TransactionManager:
@@ -45,8 +45,7 @@ class TransactionManager:
             # Ensure all required fields are present
             transaction = Transaction(**data)
             transactions.append(transaction)
-        with transaction.atomic():
-            Transaction.objects.bulk_create(transactions)
+        Transaction.objects.bulk_create(transactions)
         return transactions
     
     def update_transactions(self, transaction_data):
@@ -120,4 +119,4 @@ class TransactionManager:
                         initial_balance=data['bank_account'].get('initial_balance', 0),
                         currency=data['bank_account'].get('currency')
                     )
-            data['bank_account'] = data['bank_account'].id
+            data['bank_account'] = data['bank_account']

@@ -4,13 +4,16 @@ from django.contrib import messages
 from django.db import transaction
 from django.db.models import Sum
 
-from cash_flow.models import Transaction
+from cash_flow.api.transaction_manager import TransactionManager
+from cash_flow.api import AccountManager
+from cash_flow.models import Category, Tag, Transaction
 
 # from .models import Customer, Order, OrderItem, Product
 
 def home(request):
     search = request.GET.get('q', '')
 
+    accounts = AccountManager(request.user.id).list_accounts()  # Prevent linter error, should be imported if used
     transactions = Transaction.objects.all().order_by('-date')
 
     if search:
@@ -20,10 +23,14 @@ def home(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    amount = transactions.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+
+    amount = 0
+    for account in accounts.values():
+        amount += account['balance'] or 0
 
     return render(request, 'home.html', {
         'transactions': page_obj,
+        'accounts': accounts,
         'total_accounts': amount,
         'user': request.user,
     })
@@ -45,77 +52,49 @@ def stock(request):
     })
 
 def add_transaction(request):
-    # customers = Customer.objects.all()
-    # products = Product.objects.all()
+    categories = Category.objects.all()
+    tags = Tag.objects.all()
+    accounts = AccountManager(request.user.id).queryset
 
-    # if request.method == 'POST':
-    #     customer_id = request.POST.get('customer')  # pode ser vazio
-    #     customer = Customer.objects.filter(id=customer_id).first() if customer_id else None
-
-    #     # Os dados dos itens virão como listas
-    #     produtos_ids = request.POST.getlist('product')
-    #     quantidades = request.POST.getlist('quantity')
-    #     unit_prices = request.POST.getlist('unit_price')
-    #     descontos = request.POST.getlist('discount')
-
-    #     if not produtos_ids or len(produtos_ids) == 0:
-    #         messages.error(request, "Adicione ao menos um item no pedido.")
-    #         return render(request, 'adicionar_pedido.html', {'customers': customers, 'products': products})
-
-    #     # Validar itens
-    #     itens = []
-    #     total_value = 0
-    #     for i in range(len(produtos_ids)):
-    #         try:
-    #             product = Product.objects.get(id=produtos_ids[i])
-    #             quantity = int(quantidades[i])
-    #             unit_price = float(unit_prices[i])
-    #             discount = float(descontos[i])
-    #         except (Product.DoesNotExist, ValueError):
-    #             messages.error(request, "Dados inválidos no item do pedido.")
-    #             return render(request, 'adicionar_pedido.html', {'customers': customers, 'products': products})
-
-    #         if quantity <= 0 or unit_price < 0 or discount < 0:
-    #             messages.error(request, "Quantidade, preço e desconto devem ser valores positivos.")
-    #             return render(request, 'adicionar_pedido.html', {'customers': customers, 'products': products})
-
-    #         line_total = quantity * unit_price - discount
-    #         if line_total < 0:
-    #             messages.error(request, "Desconto não pode ser maior que o total do item.")
-    #             return render(request, 'adicionar_pedido.html', {'customers': customers, 'products': products})
-
-    #         total_value += line_total
-    #         itens.append({
-    #             'product': product,
-    #             'quantity': quantity,
-    #             'unit_price': unit_price,
-    #             'discount': discount,
-    #         })
-
-    #     # Tudo validado: salvar pedido e itens atomicalmente
-    #     try:
-    #         with transaction.atomic():
-    #             transaction = transaction.objects.create(
-    #                 customer=customer,
-    #                 status='OPEN',
-    #                 total_value=total_value,
-    #             )
-    #             for item in itens:
-    #                 transactionItem.objects.create(
-    #                     transaction=transaction,
-    #                     product=item['product'],
-    #                     quantity=item['quantity'],
-    #                     unit_price=item['unit_price'],
-    #                     discount=item['discount'],
-    #                 )
-    #         messages.success(request, f"Pedido #{transaction.id} criado com sucesso!")
-    #         return redirect('listar_pedidos')  # ajuste essa URL conforme seu projeto
-    #     except Exception as e:
-    #         messages.error(request, f"Erro ao salvar o pedido: {e}")
+    if request.method == 'POST':
+        tm = TransactionManager(request.user)
+        try:
+            if request.POST.get('recurring'):
+                # Recurring transaction
+                data = {
+                    'bank_account': accounts.get(id=request.POST.get('account')),
+                    'category': Category.objects.get(id=request.POST.get('rec_category')),
+                    'description': request.POST.get('rec_description'),
+                    'type': request.POST.get('rec_type'),
+                    'amount': float(request.POST.get('rec_amount')),
+                    'date': request.POST.get('start_date'),
+                    'status': 'PLANNED',
+                    # Add other recurring fields as needed
+                }
+                tm.create_transactions([data])
+                messages.success(request, "Recorrente adicionada com sucesso!")
+            else:
+                # Normal transaction
+                data = {
+                    'bank_account': accounts.get(id=request.POST.get('account')),
+                    'category': categories.get(id=request.POST.get('category')),
+                    'description': request.POST.get('description'),
+                    'type': request.POST.get('type'),
+                    'amount': float(request.POST.get('amount')),
+                    'date': request.POST.get('date'),
+                    'status': request.POST.get('status'),
+                    # Add tags if needed
+                }
+                tm.create_transactions([data])
+                messages.success(request, "Transação adicionada com sucesso!")
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, f"Erro ao adicionar: {e}")
 
     return render(request, 'transaction_form.html', {
-        'customers': [],
-        'products': [],
+        'accounts': accounts,
+        'categories': categories,
+        'tags': tags,
     })
 
 def add_product(request):

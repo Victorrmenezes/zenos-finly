@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Movimento{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold mb-6 text-blue-700">Adicionar Movimento</h2>
+
+  <div class="mb-8 flex gap-4">
+    <button type="button" id="tab-transaction" class="tab-btn bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition font-semibold">Transação</button>
+    <button type="button" id="tab-recurring" class="tab-btn bg-gray-200 text-blue-700 px-4 py-2 rounded hover:bg-blue-100 transition font-semibold">Recorrente</button>
+  </div>
+
+  <div id="transaction-form-section">
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      <div>
+        <label for="account" class="block text-sm font-medium text-gray-700">Conta bancária</label>
+        <select name="account" id="account" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+          <option value="" selected disabled>Selecione</option>
+          {% for account in accounts %}
+            <option value="{{ account.id }}">{{ account.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="category" class="block text-sm font-medium text-gray-700">Categoria</label>
+        <select name="category" id="category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+          <option value="" selected disabled>Selecione</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name }} ({{ cat.type }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
+        <input type="text" name="description" id="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+      </div>
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <label for="type" class="block text-sm font-medium text-gray-700">Tipo</label>
+          <select name="type" id="type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+            <option value="" selected disabled>Selecione</option>
+            <option value="INCOME">Receita</option>
+            <option value="EXPENSE">Despesa</option>
+            <option value="TRANSFER">Transferência</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label for="amount" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
+          <input type="number" name="amount" id="amount" step="0.01" min="0" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+        </div>
+      </div>
+      <div>
+        <label for="date" class="block text-sm font-medium text-gray-700">Data</label>
+        <input type="date" name="date" id="date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+      </div>
+      <div>
+        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+        <select name="status" id="status" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+          <option value="PLANNED">Planejado</option>
+          <option value="CONFIRMED">Confirmado</option>
+          <option value="CANCELLED">Cancelado</option>
+        </select>
+      </div>
+      <div>
+        <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
+        <select name="tags" id="tags" multiple class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+          {% for tag in tags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition text-lg font-semibold">
+        Salvar Transação
+      </button>
+    </form>
+  </div>
+
+  <div id="recurring-form-section" class="hidden">
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      <input type="hidden" name="recurring" value="1" />
+      <div>
+        <label for="rec_category" class="block text-sm font-medium text-gray-700">Categoria</label>
+        <select name="rec_category" id="rec_category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+          <option value="" selected disabled>Selecione</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name }} ({{ cat.type }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="rec_description" class="block text-sm font-medium text-gray-700">Descrição</label>
+        <input type="text" name="rec_description" id="rec_description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+      </div>
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <label for="rec_type" class="block text-sm font-medium text-gray-700">Tipo</label>
+          <select name="rec_type" id="rec_type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+            <option value="" selected disabled>Selecione</option>
+            <option value="INCOME">Receita</option>
+            <option value="EXPENSE">Despesa</option>
+            <option value="TRANSFER">Transferência</option>
+          </select>
+        </div>
+        <div class="flex-1">
+          <label for="rec_amount" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
+          <input type="number" name="rec_amount" id="rec_amount" step="0.01" min="0" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+        </div>
+      </div>
+      <div>
+        <label for="frequency" class="block text-sm font-medium text-gray-700">Frequência</label>
+        <select name="frequency" id="frequency" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+          <option value="" selected disabled>Selecione</option>
+          <option value="DAILY">Diária</option>
+          <option value="WEEKLY">Semanal</option>
+          <option value="MONTHLY">Mensal</option>
+          <option value="YEARLY">Anual</option>
+          <option value="CUSTOM">Personalizada</option>
+        </select>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex-1">
+          <label for="start_date" class="block text-sm font-medium text-gray-700">Data inicial</label>
+          <input type="date" name="start_date" id="start_date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+        </div>
+        <div class="flex-1">
+          <label for="end_date" class="block text-sm font-medium text-gray-700">Data final (opcional)</label>
+          <input type="date" name="end_date" id="end_date" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+        </div>
+      </div>
+      <div>
+        <label for="next_occurrence" class="block text-sm font-medium text-gray-700">Próxima ocorrência</label>
+        <input type="date" name="next_occurrence" id="next_occurrence" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition text-lg font-semibold">
+        Salvar Recorrente
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Tab switching logic
+  document.addEventListener('DOMContentLoaded', () => {
+    const transactionTab = document.getElementById('tab-transaction');
+    const recurringTab = document.getElementById('tab-recurring');
+    const transactionSection = document.getElementById('transaction-form-section');
+    const recurringSection = document.getElementById('recurring-form-section');
+
+    transactionTab.addEventListener('click', () => {
+      transactionTab.classList.add('bg-blue-600', 'text-white');
+      transactionTab.classList.remove('bg-gray-200', 'text-blue-700');
+      recurringTab.classList.remove('bg-blue-600', 'text-white');
+      recurringTab.classList.add('bg-gray-200', 'text-blue-700');
+      transactionSection.classList.remove('hidden');
+      recurringSection.classList.add('hidden');
+    });
+
+    recurringTab.addEventListener('click', () => {
+      recurringTab.classList.add('bg-blue-600', 'text-white');
+      recurringTab.classList.remove('bg-gray-200', 'text-blue-700');
+      transactionTab.classList.remove('bg-blue-600', 'text-white');
+      transactionTab.classList.add('bg-gray-200', 'text-blue-700');
+      recurringSection.classList.remove('hidden');
+      transactionSection.classList.add('hidden');
+    });
+  });
+</script>
+{% endblock %}

@@ -18,7 +18,24 @@
     <div class="text-3xl font-bold">
       R$ {{ total_accounts|floatformat:2 }}
     </div>
-  </div>
+    {% if accounts %}
+    <button type="button" onclick="document.getElementById('accounts-menu').classList.toggle('hidden')" 
+      class="mt-2 px-3 py-1 bg-blue-800 text-white rounded shadow hover:bg-blue-900 transition text-sm">
+      Ver contas ▼
+    </button>
+    {% endif %}
+    <!-- Expandable menu -->
+    <div id="accounts-menu" class="mt-2 w-64 bg-white text-blue-700 rounded shadow-lg hidden z-10">
+        <ul>
+          {% for account in accounts.values %}
+            <li class="px-4 py-2 border-b border-blue-100 flex justify-between items-center">
+              <span>{{ account.bank_name }}</span>
+              <span class="font-bold">{{account.currency.symbol}} {{ account.balance|floatformat:2 }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+    </div>
+</div>
 </div>
 <div class="flex justify-between items-center mb-6">
   <h2 class="text-2xl font-semibold">Extrato</h2>
@@ -41,34 +58,26 @@
 {% if transactions %}
 <div class="overflow-x-auto">
     <table class="min-w-full border border-gray-200 rounded-lg shadow">
-        {% comment %} <thead class="bg-blue-600 text-white">
-            <tr>
-                <th class="px-4 py-2 text-left">ID</th>
-                <th class="px-4 py-2 text-left">Conta</th>
-                <th class="px-4 py-2 text-left">Categoria</th>
-                <th class="px-4 py-2 text-left">Valor</th>
-                <th class="px-4 py-2 text-left">Estado</th>
-                <th class="px-4 py-2 text-left">Data</th>
-                <th class="px-4 py-2 text-left">Ações</th>
-            </tr>
-        </thead> {% endcomment %}
         <tbody class="bg-white divide-y divide-gray-200">
             {% for transaction in transactions %}
-            <tr class="hover:bg-gray-50 transition">
-                <td class="px-4 py-2">{{ transaction.id }}</td>
-                <td class="px-4 py-2">{{ transaction.bank_account.name }}</td>
-                <td class="px-4 py-2">{{ transaction.category.name }}</td>
-                <td class="px-4 py-2">{{ transaction.amount }}</td>
-                <td class="px-4 py-2">{{ transaction.status }}</td>
-                <td class="px-4 py-2">{{ transaction.date|date:"d/m/Y" }}</td>
-                <td class="px-4 py-2 space-x-2">
-                    <a href="{% url 'update_transaction' transaction.id %}" 
-                       class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition">Editar</a>
-                    <a href="{% url 'delete_transaction' transaction.id %}" 
-                       class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition"
-                       onclick="return confirm('Tem certeza que deseja excluir este pedido?')">Excluir</a>
-                </td>
-            </tr>
+            <tr class="hover:bg-gray-50 transition
+        {% if transaction.type == 'INCOME' %}bg-green-50{% elif transaction.type == 'EXPENSE' %}bg-red-50{% elif transaction.type == 'TRANSFER' %}bg-blue-50{% endif %}">
+      <td class="px-4 py-2">{{ transaction.date|date:"d/m/Y" }}</td>
+        <td class="px-4 py-2">{{ transaction.description }}</td>
+        <td class="px-4 py-2">{{ transaction.category.name }}</td>
+        <td class="px-4 py-2 font-bold
+            {% if transaction.type == 'INCOME' %}text-green-700{% elif transaction.type == 'EXPENSE' %}text-red-700{% elif transaction.type == 'TRANSFER' %}text-blue-700{% endif %}">
+            {{ transaction.amount }}
+        </td>
+        <td class="px-4 py-2">{{ transaction.status }}</td>
+        <td class="px-4 py-2 space-x-2">
+            <a href="{% url 'update_transaction' transaction.id %}" 
+               class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm transition">Editar</a>
+            <a href="{% url 'delete_transaction' transaction.id %}" 
+               class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition"
+               onclick="return confirm('Tem certeza que deseja excluir este pedido?')">Excluir</a>
+        </td>
+    </tr>
             {% endfor %}
         </tbody>
     </table>

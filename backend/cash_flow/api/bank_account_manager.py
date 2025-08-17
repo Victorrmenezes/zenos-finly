@@ -16,12 +16,24 @@ class AccountManager:
         """
         account = get_object_or_404(BankAccount, id=account_id)
         transactions = Transaction.objects.filter(bank_account=account)
-        balance = transactions.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
-        return balance
+        balance = account.balance_initial
+        for transaction in transactions:
+            if transaction.type == 'INCOME':
+                balance += transaction.amount
+            elif transaction.type == 'EXPENSE':
+                balance -= transaction.amount 
+        # transactions.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
+        return {
+                'balance': balance, 
+                'name': account.name, 
+                'currency': account.currency.symbol if account.currency else None, 
+                'bank_name': account.bank_name
+                }
 
     def list_accounts(self):
         """
         List all bank accounts with their balances.
+        returns account_balances: dict {account_id: balance}        
         """
         accounts = self.queryset.prefetch_related('transactions')
         account_balances = {account.id: self.get_account_balance(account.id) for account in accounts}

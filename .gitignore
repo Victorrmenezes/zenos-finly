@@ -4,3 +4,4 @@ node_modules
 backend/app/__pycache__
 backend/cash_flow/__pycache__
 backend/cash_flow/migrations/__pycache__
+backend/cash_flow/api/__pycache__
