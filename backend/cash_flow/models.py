@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -119,6 +120,7 @@ class RecurringTransaction(models.Model):
         ('CUSTOM', 'Custom'),
     ]
 
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE, null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="recurring_transactions")
 
     description = models.CharField(max_length=255)
@@ -126,9 +128,27 @@ class RecurringTransaction(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
 
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES)
-    start_date = models.DateField()
+    date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
     next_occurrence = models.DateField()
 
     def __str__(self):
         return f"{self.description} ({self.frequency})"
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.next_occurrence = self.calculate_next_occurrence()
+
+    def calculate_next_occurrence(self):
+        if self.frequency == 'DAILY':
+            return self.date + timedelta(days=1)
+        elif self.frequency == 'WEEKLY':
+            return self.date + timedelta(weeks=1)
+        elif self.frequency == 'MONTHLY':
+            next_month = self.date.month % 12 + 1
+            next_year = self.date.year + (self.date.month // 12)
+            return self.date.replace(month=next_month, year=next_year)
+        elif self.frequency == 'YEARLY':
+            return self.date.replace(year=self.date.year + 1)
+        else:
+            return None

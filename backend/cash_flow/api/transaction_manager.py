@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from cash_flow.api.bank_account_manager import AccountManager
-from ..models import Transaction, BankAccount
+from ..models import Transaction, BankAccount, RecurringTransaction
 
 class TransactionManager:
     queryset = Transaction.objects.all()
@@ -120,3 +120,34 @@ class TransactionManager:
                         currency=data['bank_account'].get('currency')
                     )
             data['bank_account'] = data['bank_account']
+
+
+    def create_recurrent_transactions(self, recurring_data):
+        """
+        Create recurring transactions based on the provided data.
+        This method should handle the logic for creating multiple transactions
+        based on a recurring schedule.
+        Example:
+        recurring_data = {
+            'bank_account': bank_account_instance,
+            'category': category_instance,
+            'description': 'Monthly Subscription',
+            'type': 'EXPENSE',
+            'amount': 50.00,
+            'start_date': '2023-10-01',
+            'frequency': 'MONTHLY',  # or 'WEEKLY', etc.
+            'end_date': '2024-10-01'  # Optional
+        }
+        """
+        rec_transactions = []
+        for rec_data in recurring_data:
+            self.pre_create_validation(rec_data)
+            # Create a RecurringTransaction instance
+            recurring_transaction = RecurringTransaction(**rec_data)
+            rec_transactions.append(recurring_transaction)
+        try:
+            RecurringTransaction.objects.bulk_create(rec_transactions)
+        except(Exception) as e:
+            raise ValueError(f"Error creating recurring transactions: {e}")
+        return rec_transactions
+

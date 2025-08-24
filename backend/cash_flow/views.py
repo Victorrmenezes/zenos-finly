@@ -59,23 +59,7 @@ def add_transaction(request):
     if request.method == 'POST':
         tm = TransactionManager(request.user)
         try:
-            if request.POST.get('recurring'):
-                # Recurring transaction
-                data = {
-                    'bank_account': accounts.get(id=request.POST.get('account')),
-                    'category': Category.objects.get(id=request.POST.get('rec_category')),
-                    'description': request.POST.get('rec_description'),
-                    'type': request.POST.get('rec_type'),
-                    'amount': float(request.POST.get('rec_amount')),
-                    'date': request.POST.get('start_date'),
-                    'status': 'PLANNED',
-                    # Add other recurring fields as needed
-                }
-                tm.create_transactions([data])
-                messages.success(request, "Recorrente adicionada com sucesso!")
-            else:
-                # Normal transaction
-                data = {
+            data = {
                     'bank_account': accounts.get(id=request.POST.get('account')),
                     'category': categories.get(id=request.POST.get('category')),
                     'description': request.POST.get('description'),
@@ -83,10 +67,13 @@ def add_transaction(request):
                     'amount': float(request.POST.get('amount')),
                     'date': request.POST.get('date'),
                     'status': request.POST.get('status'),
-                    # Add tags if needed
-                }
+            }
+            if request.POST.get('recurring'):
+                data['frequence'] = request.POST.get('frequence')
+                data['end_date'] = request.POST.get('end_date')
+                tm.create_recurrent_transactions([data])
+            else:                
                 tm.create_transactions([data])
-                messages.success(request, "Transação adicionada com sucesso!")
             return redirect('home')
         except Exception as e:
             messages.error(request, f"Erro ao adicionar: {e}")
