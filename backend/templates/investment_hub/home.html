@@ -1,0 +1,37 @@
+<!-- filepath: c:\Users\victo\dev\zenos-finly\backend\investment_hub\templates\home.html -->
+{% extends "base.html" %}
+
+{% block title %}Investment Hub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-8 bg-white rounded-lg shadow">
+  <h1 class="text-3xl font-bold text-blue-700 mb-6">Bem-vindo ao Investment Hub</h1>
+  <p class="mb-8 text-gray-700">Gerencie seus instrumentos financeiros, registros de preços e portfólios de forma simples e eficiente.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <a href="{% url 'instrument_list' %}" class="block bg-blue-50 hover:bg-blue-100 rounded-lg p-6 shadow text-center transition">
+      <div class="text-2xl font-bold text-blue-700 mb-2">Instrumentos</div>
+      <div class="text-gray-600">Veja e gerencie todos os ativos cadastrados.</div>
+    </a>
+    <a href="{% url 'portfolio_list' %}" class="block bg-green-50 hover:bg-green-100 rounded-lg p-6 shadow text-center transition">
+      <div class="text-2xl font-bold text-green-700 mb-2">Portfólios</div>
+      <div class="text-gray-600">Acompanhe o desempenho dos seus portfólios.</div>
+    </a>
+    <a href="{% url 'record_list' %}" class="block bg-yellow-50 hover:bg-yellow-100 rounded-lg p-6 shadow text-center transition">
+      <div class="text-2xl font-bold text-yellow-700 mb-2">Registros</div>
+      <div class="text-gray-600">Adicione ou visualize registros de movimentações.</div>
+    </a>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Resumo Rápido</h2>
+    <div class="bg-gray-50 rounded-lg p-4 shadow">
+      <ul class="space-y-2">
+        <li><strong>Total de instrumentos:</strong> {{ instrument_count }}</li>
+        <li><strong>Total de portfólios:</strong> {{ portfolio_count }}</li>
+        <li><strong>Total de registros:</strong> {{ record_count }}</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

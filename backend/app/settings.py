@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cash_flow'
+    'cash_flow',
+    'investment_hub'
 ]
 
 MIDDLEWARE = [

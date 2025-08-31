@@ -5,3 +5,5 @@ backend/app/__pycache__
 backend/cash_flow/__pycache__
 backend/cash_flow/migrations/__pycache__
 backend/cash_flow/api/__pycache__
+backend/investment_hub/__pycache__
+backend/investment_hub/migrations/__pycache__
