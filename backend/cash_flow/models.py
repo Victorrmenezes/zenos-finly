@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -48,17 +48,16 @@ class CreditCardInvoice(models.Model):
     ]
 
     credit_card = models.ForeignKey(CreditCard, on_delete=models.CASCADE, related_name="invoices")
-    month = models.PositiveSmallIntegerField()
-    year = models.PositiveSmallIntegerField()
+    # closing_date = models.DateField()
     due_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="OPEN")
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     class Meta:
-        unique_together = ("credit_card", "month", "year")
+        unique_together = ("credit_card", "due_date")
 
     def __str__(self):
-        return f"Invoice {self.month}/{self.year} - {self.credit_card.name}"
+        return f"Invoice {self.due_date} - {self.credit_card.name}"
 
 
 class Category(models.Model):
@@ -73,39 +72,29 @@ class Category(models.Model):
         return f"{self.name}"
 
 
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-    def __str__(self):
-        return self.name
-
-
 class Transaction(models.Model):
     TYPE_CHOICES = [
-        ('INCOME', 'Income'),
-        ('EXPENSE', 'Expense'),
-        ('TRANSFER', 'Transfer'),
+        (1, 'Pix'),
+        (2, 'Cash'),
+        (3, 'Credit Card'),
     ]
     STATUS_CHOICES = [
         ('PLANNED', 'Planned'),
         ('CONFIRMED', 'Confirmed'),
         ('CANCELLED', 'Cancelled'),
     ]
-
+    # Foreign keys
     bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE, related_name="transactions", null=True, blank=True)
-    invoice = models.ForeignKey(CreditCardInvoice, on_delete=models.SET_NULL, null=True, blank=True, related_name="transactions")
+    credit_card = models.ForeignKey(CreditCard, on_delete=models.SET_NULL, null=True, blank=True, related_name="transactions")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="transactions")
 
+    # Mandaroty Fields
     description = models.CharField(max_length=255)
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     date = models.DateField()
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="PLANNED")
-
-    tags = models.ManyToManyField(Tag, blank=True)
-
-    # Para transferências: vincular duas transações (saida/entrada)
-    transfer_id = models.UUIDField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.description} - {self.amount} ({self.type})"

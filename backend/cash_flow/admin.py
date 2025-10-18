@@ -6,7 +6,6 @@ from .models import (
     CreditCard,
     CreditCardInvoice,
     Category,
-    Tag,
     Transaction,
     RecurringTransaction,
 )
@@ -17,6 +16,5 @@ admin.site.register(BankAccount)
 admin.site.register(CreditCard)
 admin.site.register(CreditCardInvoice)
 admin.site.register(Category)
-admin.site.register(Tag)
 admin.site.register(Transaction)
 admin.site.register(RecurringTransaction)

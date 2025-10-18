@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Estoque{% endblock %}
+{% block title %}Cartão de crédito{% endblock %}
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-  <h2 class="text-2xl font-semibold">Estoque</h2>
+  <h2 class="text-2xl font-semibold">Cartão de crédito</h2>
   <a href="/adicionar-produto/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-    Adicionar produto
+    Adicionar compra
   </a>
 </div>
 
@@ -20,7 +20,7 @@
     </button>
 </form>
 
-{% if stock %}
+{% if invoices %}
 <div class="overflow-x-auto">
     <table class="min-w-full border border-gray-200 rounded-lg shadow">
         <thead class="bg-blue-600 text-white">
@@ -74,7 +74,7 @@
 
 {% else %}
 <div class="bg-yellow-100 border border-yellow-300 text-yellow-700 px-4 py-3 rounded">
-    Nenhum produto em estoque.
+    Nenhuma fatura encontrada.
 </div>
 {% endif %}
 {% endblock %}

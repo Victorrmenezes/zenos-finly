@@ -85,14 +85,6 @@
         </div>
       </div>
     </div>
-    <div>
-      <label for="tags" class="block text-sm font-medium text-gray-700">Tags</label>
-      <select name="tags" id="tags" multiple class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
-        {% for tag in tags %}
-          <option value="{{ tag.id }}">{{ tag.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
     <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition text-lg font-semibold">
       Salvar
     </button>
