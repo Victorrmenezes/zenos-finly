@@ -37,9 +37,13 @@ class Record(models.Model):
 
 class Portfolio(models.Model):
     date = models.DateField()
-    def __init__(self, portfolios = [], date = datetime.date.today()):
-        self.date = date
-        self.records = {}
+    # def __init__(self, portfolios = []):
+    #     self.fill_portfolios(portfolios)
+    #     self.value = self.total_value()
+    #     self.incomings = self.total_incomings()
+    #     self.expenses = self.total_expenses()
+
+    def fill_portfolios(self, portfolios):
         for portfolio in portfolios:
             if not isinstance(portfolio, (Record, Portfolio)):
                 raise ValueError("Portfolio must be InvestmentRecord or InvestmentPortfolio instances")
@@ -47,9 +51,6 @@ class Portfolio(models.Model):
                 self.records.update(portfolio)
             elif isinstance(portfolio, Portfolio):
                 self.records.update(portfolio.records)
-        self.value = self.total_value()
-        self.incomings = self.total_incomings()
-        self.expenses = self.total_expenses()
 
     def total_value(self) -> float:
         return sum(record.value() for record in self.records.values())

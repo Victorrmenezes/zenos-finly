@@ -4,9 +4,11 @@ from .models import (
     IntrumentPrice,
     Record,
     Portfolio,
+    PortfolioRecord,
 )
 
 admin.site.register(Instrument)
 admin.site.register(IntrumentPrice)
 admin.site.register(Record)
 admin.site.register(Portfolio)
+admin.site.register(PortfolioRecord)

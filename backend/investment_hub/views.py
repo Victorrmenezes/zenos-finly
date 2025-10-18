@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Instrument, Record, Portfolio, IntrumentPrice
+from .models import Instrument, PortfolioRecord, Record, Portfolio, IntrumentPrice
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -13,16 +13,16 @@ def home(request):
         "record_count": record_count,
     })
 
-# def instrument_list(request):
-#     instruments = Instrument.objects.all()
-#     return render(request, "investment_hub/instrument_list.html", {
-#         "instruments": instruments,
-#     })
-
 def portfolio_list(request):
     portfolios = Portfolio.objects.all()
+    PortfolioRecord.objects.filter(portfolio__in=portfolios).select_related('record', 'portfolio')
+    chart_data = {
+        "labels": [portfolio.date.strftime("%Y-%m-%d") for portfolio in portfolios],
+        "values": [portfolio.value for portfolio in portfolios],
+    }
     return render(request, "investment_hub/portfolio_list.html", {
         "portfolios": portfolios,
+        "chart_data": chart_data,
     })
 
 def record_list(request):
