@@ -11,13 +11,23 @@
 
 <!-- Barra de busca -->
 <form method="GET" class="mb-4 flex flex-wrap gap-2">
-    <input type="text" name="q" value="{{ request.GET.q }}" 
-        placeholder="Buscar por cliente ou produto..." 
-        class="flex-1 min-w-[250px] px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400">
-    <button type="submit" 
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-        Buscar
-    </button>
+    <div class="flex flex-wrap gap-2 items-end w-full">
+        <div class="min-w-[180px]">
+            <label class="sr-only" for="credit_card">Cartão de crédito</label>
+            <input id="credit_card" name="credit_card" type="text" placeholder="Cartão de crédito" value="{{ request.GET.credit_card }}" 
+                         class="w-full px-3 py-2 border rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+
+        <div class="min-w-[150px]">
+            <label class="sr-only" for="date">Data início</label>
+            <input id="date" name="date" type="date" value="{{ request.GET.date }}" 
+                         class="w-full px-3 py-2 border rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        </div>
+        <button type="submit" 
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+            Buscar
+        </button>
+    </div>
 </form>
 
 {% if invoices %}

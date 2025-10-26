@@ -1,23 +1,18 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import transaction
-from django.db.models import Sum
 
 from cash_flow.api.transaction_manager import TransactionManager
 from cash_flow.api import AccountManager
 from cash_flow.models import Category, Transaction
 
-from datetime import datetime, date
-import calendar
-
-# from .models import Customer, Order, OrderItem, Product
+from datetime import datetime
 
 def home(request):
     search = request.GET.get('q', '')
 
     accounts = AccountManager(request.user.id).list_accounts()  # Prevent linter error, should be imported if used
-    transactions = Transaction.objects.all().order_by('-date')
+    transactions = Transaction.objects.filter(bank_account_id__in=accounts.keys()).order_by('-date')
 
     if search:
         transactions = transactions.filter(category__name__icontains=search) | transactions.filter(bank_account__name__icontains=search)
@@ -39,57 +34,15 @@ def home(request):
     })
 
 def invoices(request):
-    month_param = request.GET.get('month')
-    year_param = request.GET.get('year')
-    credit_card_param = request.GET.get('credit_card')
+    date = datetime.fromisoformat(request.GET.get('date')) if request.GET.get('date') else date.today()
+    filter = {
+        'date__year': date.year,
+        'date__month': date.month,
+    }
+    if request.GET.get('credit_card'):
+        filter['credit_card'] = request.GET.get('credit_card')
 
-    transactions = Transaction.objects.all()
-
-    # Filter by month (accepts "YYYY-MM", "MM-YYYY", or "MM" with optional "year" param)
-    if month_param:
-        try:
-            if '-' in month_param:
-                a, b = month_param.split('-', 1)
-                if len(a) == 4:
-                    year = int(a); month = int(b)
-                else:
-                    year = int(b); month = int(a)
-            else:
-                month = int(month_param)
-                year = int(year_param) if year_param else datetime.now().year
-
-            start_date = date(year, month, 1)
-            last_day = calendar.monthrange(year, month)[1]
-            end_date = date(year, month, last_day)
-
-            date_field = Transaction._meta.get_field('date')
-            if date_field.get_internal_type() == 'DateTimeField':
-                start_dt = datetime(year, month, 1)
-                if month == 12:
-                    next_month_start = datetime(year + 1, 1, 1)
-                else:
-                    next_month_start = datetime(year, month + 1, 1)
-                transactions = transactions.filter(date__gte=start_dt, date__lt=next_month_start)
-            else:
-                transactions = transactions.filter(date__range=(start_date, end_date))
-        except Exception as e:
-            messages.error(request, f"Invalid month/year parameters: {e}")
-
-    # If credit_card param is truthy, filter to only credit-card accounts (tries common field names)
-    if credit_card_param and credit_card_param.lower() in ('1', 'true', 'yes', 'y'):
-        try:
-            bank_rel_model = Transaction._meta.get_field('bank_account').related_model
-            bank_field_names = {f.name for f in bank_rel_model._meta.fields}
-            if 'is_credit_card' in bank_field_names:
-                transactions = transactions.filter(bank_account__is_credit_card=True)
-            elif 'credit_card' in bank_field_names:
-                transactions = transactions.filter(bank_account__credit_card=True)
-            elif 'type' in bank_field_names:
-                transactions = transactions.filter(bank_account__type='credit_card')
-            # else: no known credit-card marker on account model, skip filtering
-        except Exception:
-            # If anything goes wrong inspecting related model, skip the credit-card filter silently
-            pass
+    transactions = Transaction.objects.filter(**filter)
 
     transactions = transactions.order_by('-date')
 
@@ -99,7 +52,9 @@ def invoices(request):
 
 def add_transaction(request):
     categories = Category.objects.all()
-    accounts = AccountManager(request.user.id).queryset
+    account_manager = AccountManager(request.user.id)
+    accounts = account_manager.queryset
+    credit_cards = account_manager.get_credit_cards()
 
     if request.method == 'POST':
         tm = TransactionManager(request.user)
@@ -107,6 +62,7 @@ def add_transaction(request):
             data = {
                     'bank_account': accounts.get(id=request.POST.get('account')),
                     'category': categories.get(id=request.POST.get('category')),
+                    'credit_card': credit_cards.get(id=request.POST.get('credit_card',None)),
                     'description': request.POST.get('description'),
                     'type': request.POST.get('type'),
                     'amount': float(request.POST.get('amount')),
@@ -126,6 +82,7 @@ def add_transaction(request):
     return render(request, 'transaction_form.html', {
         'accounts': accounts,
         'categories': categories,
+        'credit_cards': credit_cards,
     })
 
 def add_product(request):

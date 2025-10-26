@@ -13,7 +13,7 @@
 
   <form method="post" class="space-y-6" id="main-form">
     {% csrf_token %}
-    <input type="hidden" name="recurring" id="recurring-flag" value="0" />
+    <input type="hidden" name="recurring" id="recurring-flag" value="" />
 
     <div>
       <label for="account" class="block text-sm font-medium text-gray-700">Conta bancária</label>
@@ -25,28 +25,37 @@
       </select>
     </div>
     <div>
-      <label for="category" class="block text-sm font-medium text-gray-700">Categoria</label>
-      <select name="category" id="category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+      <label for="credit_card" class="block text-sm font-medium text-gray-700">Cartão de crédito</label>
+      <select name="credit_card" id="credit_card" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
         <option value="" selected disabled>Selecione</option>
-        {% for cat in categories %}
-          <option value="{{ cat.id }}">{{ cat.name }} ({{ cat.type }})</option>
+        {% for credit_card in credit_cards %}
+          <option value="{{ credit_card.id }}">{{ credit_card.name }}</option>
         {% endfor %}
       </select>
     </div>
     <div>
-      <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
-      <input type="text" name="description" id="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
+      <label for="category" class="block text-sm font-medium text-gray-700">Categoria</label>
+      <select name="category" id="category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
+        <option value="" selected disabled>Selecione</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.name }}</option>
+        {% endfor %}
+      </select>
     </div>
     <div class="flex gap-4">
       <div class="flex-1">
         <label for="type" class="block text-sm font-medium text-gray-700">Tipo</label>
         <select name="type" id="type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white">
           <option value="" selected disabled>Selecione</option>
-          <option value="INCOME">Receita</option>
-          <option value="EXPENSE">Despesa</option>
-          <option value="TRANSFER">Transferência</option>
+          <option value="PIX">Pix</option>
+          <option value="CASH">Dinheiro</option>
+          <option value="CREDITCARD">Cartao de crédito</option>
         </select>
+      <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
+        <input type="text" name="description" id="description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
       </div>
+    </div>
       <div class="flex-1">
         <label for="amount" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
         <input type="number" name="amount" id="amount" step="0.01" min="0" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white" />
@@ -106,7 +115,7 @@
       recurringTab.classList.add('bg-gray-200', 'text-blue-700');
       transactionFields.classList.remove('hidden');
       recurringFields.classList.add('hidden');
-      recurringFlag.value = "0";
+      recurringFlag.value = "";
     });
 
     recurringTab.addEventListener('click', () => {

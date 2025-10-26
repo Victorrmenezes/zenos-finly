@@ -29,7 +29,6 @@ class BankAccount(models.Model):
 
 
 class CreditCard(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="credit_cards")
     bank_account = models.ForeignKey(BankAccount, on_delete=models.SET_NULL, null=True, blank=True, related_name="credit_cards")
     name = models.CharField(max_length=100)
     limit = models.DecimalField(max_digits=12, decimal_places=2)
@@ -37,7 +36,7 @@ class CreditCard(models.Model):
     due_day = models.PositiveSmallIntegerField()      # dia de vencimento da fatura
 
     def __str__(self):
-        return f"{self.name} ({self.user.username})"
+        return f"{self.name} - {self.bank_account.user.username if self.bank_account else 'No Account'}"
 
 
 class CreditCardInvoice(models.Model):
@@ -48,7 +47,7 @@ class CreditCardInvoice(models.Model):
     ]
 
     credit_card = models.ForeignKey(CreditCard, on_delete=models.CASCADE, related_name="invoices")
-    # closing_date = models.DateField()
+    closing_date = models.DateField()
     due_date = models.DateField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="OPEN")
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -74,9 +73,9 @@ class Category(models.Model):
 
 class Transaction(models.Model):
     TYPE_CHOICES = [
-        (1, 'Pix'),
-        (2, 'Cash'),
-        (3, 'Credit Card'),
+        ('PIX', 'Pix'),
+        ('CASH', 'Cash'),
+        ('CREDITCARD', 'Credit Card'),
     ]
     STATUS_CHOICES = [
         ('PLANNED', 'Planned'),
@@ -90,7 +89,7 @@ class Transaction(models.Model):
 
     # Mandaroty Fields
     description = models.CharField(max_length=255)
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=12, choices=TYPE_CHOICES)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     date = models.DateField()
 
