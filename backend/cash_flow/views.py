@@ -34,7 +34,7 @@ def home(request):
     })
 
 def invoices(request):
-    date = datetime.fromisoformat(request.GET.get('date')) if request.GET.get('date') else date.today()
+    date = datetime.fromisoformat(request.GET.get('date')) if request.GET.get('date') else datetime.now()
     filter = {
         'date__year': date.year,
         'date__month': date.month,

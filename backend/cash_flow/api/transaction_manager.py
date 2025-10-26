@@ -89,7 +89,7 @@ class TransactionManager:
         Validate the data before creating a transaction.
         This method can be overridden to add custom validation logic.
         """
-        required_fields = ['bank_account', 'amount', 'date', 'type']
+        required_fields = ['bank_account', 'amount', 'date', 'category']
         for field in required_fields:
             if field not in data or data[field] is None:
                 raise ValueError(f"Missing required field: {field}")

@@ -18,10 +18,7 @@ class AccountManager:
         transactions = Transaction.objects.filter(bank_account=account)
         balance = account.balance_initial
         for transaction in transactions:
-            if transaction.type == 'INCOME':
-                balance += transaction.amount
-            elif transaction.type == 'EXPENSE':
-                balance -= transaction.amount 
+            balance += transaction.amount
         # transactions.aggregate(total_amount=Sum('amount'))['total_amount'] or 0
         return {
                 'balance': balance, 
@@ -60,3 +57,13 @@ class AccountManager:
             currency=currency
         )
         return account
+    
+    def get_credit_cards(self):
+        """
+        Retrieve all credit cards associated with the user's bank accounts.
+        """
+        self.credit_cards = []
+        accounts = self.queryset.prefetch_related('credit_cards')
+        for account in accounts:
+            self.credit_cards.extend(account.credit_cards.all())
+        return self.credit_cards
