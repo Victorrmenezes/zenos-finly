@@ -1,3 +1,4 @@
+import io
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -5,8 +6,10 @@ from django.contrib import messages
 from cash_flow.api.transaction_manager import TransactionManager
 from cash_flow.api import AccountManager
 from cash_flow.models import Category, Transaction
+from .helpers import norm_str
 
 from datetime import datetime
+from openpyxl import load_workbook
 
 def home(request):
     search = request.GET.get('q', '')
@@ -50,6 +53,46 @@ def invoices(request):
         'invoices': []
     })
 
+def import_invoices(request):
+    mapping_dict = {
+        'data': 'date',
+        'descricao': 'description',
+        'valor': 'amount',
+        'categoria': 'category',
+        'cartao': 'credit_card',
+    }
+    if request.method == 'POST' and request.FILES.get('imported_file'):
+        uploaded = request.FILES['imported_file']
+        try:
+            raw = uploaded.read()
+            wb = load_workbook(filename=io.BytesIO(raw), data_only=True)
+            ws = wb.active
+            rows = list(ws.values)
+
+            if not rows:
+                messages.error(request, f'Arquivo "{uploaded.name}" vazio.')
+            else:
+                headers = []
+                for i, h in enumerate(rows[0]):
+                    if h is None:
+                        headers.append(f'col_{i}')
+                    else:
+                        headers.append(mapping_dict.get(norm_str(str(h)), norm_str(str(h))))
+
+                transactions = []
+                for row in rows[1:]:
+                    rowdict = {headers[i]: (row[i] if i < len(row) and row[i] is not None else '') for i in range(len(headers))}
+                    rowdict['type'] = 'CREDITCARD'
+                    transactions.append(rowdict)
+
+                messages.success(request, f'Arquivo "{uploaded.name}" lido. {len(transactions)} linhas encontradas.')
+                TransactionManager(request.user).create_transactions(transactions)
+                return render(request, 'invoices.html')
+        except Exception as e:
+            messages.error(request, f'Erro ao ler arquivo: {e}')
+    return render(request, 'home.html')
+
+
 def add_transaction(request):
     categories = Category.objects.all()
     account_manager = AccountManager(request.user.id)
@@ -62,7 +105,7 @@ def add_transaction(request):
             data = {
                     'bank_account': accounts.get(id=request.POST.get('account')),
                     'category': categories.get(id=request.POST.get('category')),
-                    'credit_card': credit_cards.get(id=request.POST.get('credit_card',None)),
+                    'credit_card': credit_cards.get(int(request.POST.get('credit_card',None))),
                     'description': request.POST.get('description'),
                     'type': request.POST.get('type'),
                     'amount': float(request.POST.get('amount')),

@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 
+from cash_flow.api.category_manager import CategoryManager
 from cash_flow.api.bank_account_manager import AccountManager
-from ..models import CreditCard, Transaction, BankAccount, RecurringTransaction
+from ..models import Transaction, RecurringTransaction
 
 class TransactionManager:
     queryset = Transaction.objects.all()
@@ -10,6 +11,7 @@ class TransactionManager:
         self.user = user
         self.queryset = self.queryset.filter(bank_account__user=user)
         self.account_manager = AccountManager(self.user)
+        self.category_manager = CategoryManager(self.user)
 
     def create_transactions(self, transactions_data):
         """
@@ -103,6 +105,9 @@ class TransactionManager:
         data['bank_account'], data['credit_card'] = self.account_manager.resolve_account_and_card(
             bank_account=data.get('bank_account'),
             credit_card=data.get('credit_card'))
+        data['category'] = self.category_manager.create_category(
+            name=data.get('category')
+        )
 
     def create_recurrent_transactions(self, recurring_data):
         """

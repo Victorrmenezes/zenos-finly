@@ -1,6 +1,8 @@
+from collections import defaultdict
 from django.shortcuts import get_object_or_404
+
+from ..helpers import norm_str
 from ..models import CreditCard, Transaction, BankAccount
-from django.db.models import Sum
 
 class AccountManager:
     queryset = BankAccount.objects.all()
@@ -8,6 +10,7 @@ class AccountManager:
     def __init__(self, user=None):
         self.user = user
         self.queryset = self.queryset.filter(user=user) if user else self.queryset
+        self.get_credit_cards()
 
     @classmethod
     def get_account_balance(cls, account_id):
@@ -65,7 +68,7 @@ class AccountManager:
         - name: Name of the credit card.
         - bank_account: BankAccount instance to which the credit card is linked.
         """
-        credit_card = self.queryset.filter(name=name).first()
+        credit_card = self.credit_cards_by_name.get(norm_str(name))
         if credit_card:
             return credit_card
         credit_card = CreditCard.objects.create(
@@ -78,10 +81,11 @@ class AccountManager:
         """
         Retrieve all credit cards associated with the user's bank accounts.
         """
-        self.credit_cards = []
+        self.credit_cards = defaultdict(CreditCard)
         accounts = self.queryset.prefetch_related('credit_cards')
         for account in accounts:
-            self.credit_cards.extend(account.credit_cards.all())
+            self.credit_cards.update({cc.id: cc for cc in account.credit_cards.all()})
+        self.credit_cards_by_name = {norm_str(cc.name): cc for cc in self.credit_cards.values()}
         return self.credit_cards
     
     def resolve_account_and_card(self, bank_account=None, credit_card=None):
@@ -100,7 +104,8 @@ class AccountManager:
             elif isinstance(credit_card, str):
                 # If credit_card is a string, assume it is the name and get or create a new account
                 credit_card = self.create_credit_card(
-                    name=credit_card
+                    name=credit_card,
+                    bank_account=bank_account
                 )
             elif isinstance(credit_card, dict):
                 # If credit_card is a dict, assume it contains the ID
@@ -109,7 +114,7 @@ class AccountManager:
                 else:
                     self.create_credit_card(
                         name=credit_card['name'],
-                        bank_account=bank_account
+                        bank_account=credit_card.get('bank_account', bank_account)
                     )
         if credit_card:
             # If credit_card is provided, get its associated bank account

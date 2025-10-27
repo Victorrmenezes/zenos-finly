@@ -10,8 +10,8 @@
 </div>
 
 <!-- Barra de busca -->
+<div class="flex flex-wrap gap-2 items-end w-full">
 <form method="GET" class="mb-4 flex flex-wrap gap-2">
-    <div class="flex flex-wrap gap-2 items-end w-full">
         <div class="min-w-[180px]">
             <label class="sr-only" for="credit_card">Cartão de crédito</label>
             <input id="credit_card" name="credit_card" type="text" placeholder="Cartão de crédito" value="{{ request.GET.credit_card }}" 
@@ -27,9 +27,38 @@
             class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
             Buscar
         </button>
-    </div>
-</form>
+    </form>
+    <form method="POST" action="{% url 'import_invoices' %}" enctype="multipart/form-data" class="mb-4 flex flex-wrap items-center gap-2">
+        {% csrf_token %}
+        <div class="flex items-center gap-2">
+            <label for="imported_file" class="sr-only">Arquivo</label>
+            <input id="imported_file" name="imported_file" type="file" accept=".xlsx,.xls" required
+            class="px-3 py-2 border rounded bg-white focus:outline-none focus:ring-2 focus:ring-blue-400" />
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                Importar arquivo
+            </button>
+        </div>
+        
+        {% comment %} <div class="w-full mt-2 text-sm text-gray-600">
+            Aceito arquivos .xlsx / .xls. Faça o upload de um arquivo com as colunas esperadas (ex.: produto, quantidade, preço, custo).
+            <a href="{% url 'download_sample_invoices' %}" class="ml-2 text-blue-600 hover:underline">Baixar modelo (.xlsx)</a>
+        </div> {% endcomment %}
+    </form>
+</div>
 
+{% if messages %}
+    <div class="mb-4 space-y-2">
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="px-4 py-2 rounded bg-green-100 text-green-800">{{ message }}</div>
+            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                <div class="px-4 py-2 rounded bg-red-100 text-red-800">{{ message }}</div>
+            {% else %}
+                <div class="px-4 py-2 rounded bg-gray-100 text-gray-800">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
 {% if invoices %}
 <div class="overflow-x-auto">
     <table class="min-w-full border border-gray-200 rounded-lg shadow">
