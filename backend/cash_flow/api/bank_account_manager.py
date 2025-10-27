@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from ..models import Transaction, BankAccount
+from ..models import CreditCard, Transaction, BankAccount
 from django.db.models import Sum
 
 class AccountManager:
@@ -57,6 +57,22 @@ class AccountManager:
             currency=currency
         )
         return account
+    
+    def create_credit_card(self, name, bank_account):
+        """
+        Create a new credit card for a user.
+        Parameters:
+        - name: Name of the credit card.
+        - bank_account: BankAccount instance to which the credit card is linked.
+        """
+        credit_card = self.queryset.filter(name=name).first()
+        if credit_card:
+            return credit_card
+        credit_card = CreditCard.objects.create(
+            bank_account=bank_account,
+            name=name,
+        )
+        return credit_card
     
     def get_credit_cards(self):
         """
