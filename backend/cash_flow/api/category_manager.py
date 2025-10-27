@@ -24,6 +24,7 @@ class CategoryManager:
         if category:
             return category
         category = Category.objects.create(name=name, is_approved=is_approved)
+        self.category_by_name[norm_str(name)] = category
         return category
 
     def update_category(self, category_id, name=None, is_approved=None):

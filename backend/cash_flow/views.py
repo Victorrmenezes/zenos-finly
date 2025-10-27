@@ -83,6 +83,7 @@ def import_invoices(request):
                 for row in rows[1:]:
                     rowdict = {headers[i]: (row[i] if i < len(row) and row[i] is not None else '') for i in range(len(headers))}
                     rowdict['type'] = 'CREDITCARD'
+                    rowdict['amount'] = -abs(rowdict['amount'])
                     transactions.append(rowdict)
 
                 messages.success(request, f'Arquivo "{uploaded.name}" lido. {len(transactions)} linhas encontradas.')
@@ -125,7 +126,7 @@ def add_transaction(request):
     return render(request, 'transaction_form.html', {
         'accounts': accounts,
         'categories': categories,
-        'credit_cards': credit_cards,
+        'credit_cards': credit_cards.values(),
     })
 
 def add_product(request):
