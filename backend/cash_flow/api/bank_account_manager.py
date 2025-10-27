@@ -83,3 +83,58 @@ class AccountManager:
         for account in accounts:
             self.credit_cards.extend(account.credit_cards.all())
         return self.credit_cards
+    
+    def resolve_account_and_card(self, bank_account=None, credit_card=None):
+        """
+        Resolve and return the BankAccount and CreditCard instances based on the provided inputs.
+        Parameters:
+        - bank_account: Can be a BankAccount instance, an ID, a name, or a dict with details.
+        - credit_card: Can be a CreditCard instance, an ID, a name, or a dict with details.
+        Returns:
+        - (BankAccount instance, CreditCard instance or None)
+        """
+        if not isinstance(credit_card, CreditCard):
+            if isinstance(credit_card, int):
+                # If credit_card is an ID, fetch the BankAccount instance
+                credit_card = get_object_or_404(CreditCard, id=credit_card)
+            elif isinstance(credit_card, str):
+                # If credit_card is a string, assume it is the name and get or create a new account
+                credit_card = self.create_credit_card(
+                    name=credit_card
+                )
+            elif isinstance(credit_card, dict):
+                # If credit_card is a dict, assume it contains the ID
+                if 'id' in credit_card:
+                    credit_card = get_object_or_404(CreditCard, id=credit_card['id'])
+                else:
+                    self.create_credit_card(
+                        name=credit_card['name'],
+                        bank_account=bank_account
+                    )
+        if credit_card:
+            # If credit_card is provided, get its associated bank account
+            bank_account = credit_card.bank_account
+            return bank_account, credit_card
+        
+        if not isinstance(bank_account, BankAccount):
+            if isinstance(bank_account, int):
+                # If bank_account is an ID, fetch the BankAccount instance
+                bank_account = get_object_or_404(BankAccount, id=bank_account)
+            elif isinstance(bank_account, str):
+                # If bank_account is a string, assume it is the name and get or create a new account
+                bank_account = self.create_account(
+                    name=bank_account
+                )
+            elif isinstance(bank_account, dict):
+                # If bank_account is a dict, assume it contains the ID
+                if 'id' in bank_account:
+                    bank_account = get_object_or_404(BankAccount, id=bank_account['id'])
+                else:
+                    self.create_account(
+                        name=bank_account['name'],
+                        bank_name=bank_account.get('bank_name'),
+                        initial_balance=bank_account.get('initial_balance', 0),
+                        currency=bank_account.get('currency')
+                    )
+            bank_account = bank_account
+        return bank_account, None

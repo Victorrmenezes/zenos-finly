@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 
 from cash_flow.api.bank_account_manager import AccountManager
-from ..models import Transaction, BankAccount, RecurringTransaction
+from ..models import CreditCard, Transaction, BankAccount, RecurringTransaction
 
 class TransactionManager:
     queryset = Transaction.objects.all()
@@ -89,38 +89,20 @@ class TransactionManager:
         Validate the data before creating a transaction.
         This method can be overridden to add custom validation logic.
         """
-        required_fields = ['bank_account', 'amount', 'date', 'category']
+        required_fields = ['amount', 'date']
         for field in required_fields:
             if field not in data or data[field] is None:
                 raise ValueError(f"Missing required field: {field}")
-        if data['amount'] <= 0:
-            raise ValueError("Amount must be greater than zero")
         if data['date'] is None:
             raise ValueError("Date cannot be null")
         if data['type'] not in dict(Transaction.TYPE_CHOICES):
             raise ValueError(f"Invalid transaction type: {data['type']}")
-        if not isinstance(data['bank_account'],BankAccount):
-            if isinstance(data['bank_account'], int):
-                # If bank_account is an ID, fetch the BankAccount instance
-                data['bank_account'] = get_object_or_404(BankAccount, id=data['bank_account'])
-            elif isinstance(data['bank_account'], str):
-                # If bank_account is a string, assume it is the name and create a new account
-                data['bank_account'] = self.account_manager.create_account(
-                    name=data['bank_account']
-                )
-            elif isinstance(data['bank_account'], dict):
-                # If bank_account is a dict, assume it contains the ID
-                if 'id' in data['bank_account']:
-                    data['bank_account'] = get_object_or_404(BankAccount, id=data['bank_account']['id'])
-                else:
-                    self.account_manager.create_account(
-                        name=data['bank_account']['name'],
-                        bank_name=data['bank_account'].get('bank_name'),
-                        initial_balance=data['bank_account'].get('initial_balance', 0),
-                        currency=data['bank_account'].get('currency')
-                    )
-            data['bank_account'] = data['bank_account']
+        if not data.get('bank_account') and not data.get('credit_card'):
+            raise ValueError("Either bank_account or credit_card must be provided")
 
+        data['bank_account'], data['credit_card'] = self.account_manager.resolve_account_and_card(
+            bank_account=data.get('bank_account'),
+            credit_card=data.get('credit_card'))
 
     def create_recurrent_transactions(self, recurring_data):
         """
