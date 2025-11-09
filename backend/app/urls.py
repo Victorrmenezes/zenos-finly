@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),   # login: username+password -> access+refresh
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # JWT auth endpoints
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    # REST API endpoints (JSON)
+    path("api/", include("cash_flow.api_urls")),
+    # Template views & legacy URLs
     path("", include("cash_flow.urls")),
 ]

@@ -27,10 +27,10 @@ export async function deleteTransaction(id) {
 }
 
 // Credit Card specific
-export async function listCreditCardTransactions({ date, credit_card, page = 1, page_size = 50 } = {}) {
-	const params = { page, page_size };
+export async function listCreditCardTransactions({ date, credit_card} = {}) {
+	const params = {};
 	if (date) params.date = date; // YYYY-MM-DD (billing period reference)
-	if (credit_card) params.credit_card = credit_card;
+	if (credit_card) params.credit_card = credit_card;  
 	const { data } = await api.get("/credit-cards/transactions/", { params });
 	return data;
 }
