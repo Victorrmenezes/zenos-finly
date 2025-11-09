@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
 
@@ -7,26 +6,24 @@ function Footer() {
     <footer className="footer">
       <div className="footer-content">
         <div className="footer-section">
-          <h3>Zenos Food</h3>
-          <p>O melhor da gastronomia local</p>
+          <h3>Zenos Financeiro</h3>
+          <p>Vida financeira Zen!</p>
         </div>
         
         <div className="footer-section">
           <h4>Links Úteis</h4>
-          <Link to="/about">Sobre</Link>
           <Link to="/contact">Contato</Link>
-          <Link to="/privacy">Privacidade</Link>
         </div>
         
         <div className="footer-section">
-          <h4>Restaurantes</h4>
+          <h4>Financeiro</h4>
           <Link to="/partners">Seja Parceiro</Link>
-          <Link to="/restaurants">Encontre Restaurantes</Link>
+          <Link to="/transactions">Minhas Transações</Link>
         </div>
       </div>
       
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} Zenos Food. Todos os direitos reservados.</p>
+        <p>&copy; {new Date().getFullYear()} Zenos Financeiro. Todos os direitos reservados.</p>
       </div>
     </footer>
   );

@@ -1,9 +1,8 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './NavBar.css';
 
-function NavBar({ onToggleNav, isNavVisible }) {
+function NavBar() {
   const { user, handleLogout } = useAuth();
 
   return (
@@ -11,16 +10,16 @@ function NavBar({ onToggleNav, isNavVisible }) {
       <div className="navbar-logo-group">
         <Link to="/" className="navbar-logo">Zenos</Link>
       </div>
-      <div className="navbar-search">
+      {/* <div className="navbar-search">
         <input
           type="search"
           placeholder="Buscar restaurantes..."
           className="search-input"
-        /></div>
+        /></div> */}
       <div className="navbar-menu-group">
-        <Link to="/" className="navbar-menu-item">HOME</Link>
-        <Link to="/products" className="navbar-menu-item">MENU</Link>
-        <Link to="/contacts" className="navbar-menu-item">CONTACTS</Link>
+        <Link to="/" className="navbar-menu-item">Dashboard</Link>
+        <Link to="/credit-card" className="navbar-menu-item">Cartão de Crédito</Link>
+        {/* <Link to="/contacts" className="navbar-menu-item">CONTATOS</Link> */}
       </div>
       <div className="navbar-auth-group">
         {!user ? (
@@ -30,7 +29,7 @@ function NavBar({ onToggleNav, isNavVisible }) {
         ) : (
           <>
             <Link to="/profile" className="navbar-menu-item">
-              {user.username || 'Perfil'}
+              {user.first_name || 'Perfil'}
             </Link>
             <button onClick={handleLogout} className="navbar-menu-item btn-link">
               Sair
