@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
+import CreditCardPage from './pages/CreditCardPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 function PrivateRoute({ children }) {
@@ -18,6 +19,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/credit-card" element={<CreditCardPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/profile"
