@@ -20,3 +20,19 @@
 .import-preview-head { background:#f8fafc; padding:.5rem .75rem; font-weight:600; border-bottom:1px solid #e2e8f0; }
 .import-preview pre { margin:0; padding:.75rem; max-height:200px; overflow:auto; background:#ffffff; }
 .link-btn { background:none; border:none; color:#1d4ed8; padding:.5rem .75rem; cursor:pointer; text-decoration:underline; }
+
+/* Filters row styling to match HomePage inputs */
+.filters-row { display:flex; flex-wrap:wrap; gap:.75rem 1rem; align-items:flex-end; margin:.5rem 0 1rem; }
+.filter-item { display:flex; flex-direction:column; }
+.filter-item label { font-size:.75rem; font-weight:600; text-transform:uppercase; color:#374151; letter-spacing:.5px; }
+.filter-item select,
+.filter-item input[type="text"],
+.filter-item input[type="date"],
+.filter-item .mpicker-input {
+	margin-top:.25rem; padding:.5rem .65rem; font-size:.85rem; border:1px solid #d1d5db; border-radius:6px; background:#fff; min-width:160px;
+}
+.filter-item select:focus,
+.filter-item input[type="text"]:focus,
+.filter-item input[type="date"]:focus {
+	outline:2px solid #2563eb33; border-color:#2563eb;
+}

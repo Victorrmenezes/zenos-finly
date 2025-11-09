@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import BasePage from './BasePage';
 import './CregitCardPage.css';
-import { listCreditCardTransactions, importCreditCardFile } from '../api/cash_flow';
+import { listCreditCardTransactions, importCreditCardFile, listCreditCards } from '../api/cash_flow';
 import Table from '../components/MyTable.jsx';
+import MonthPicker from '../components/MonthPicker.jsx';
 
 function CreditCardPage() {
 	const [transactions, setTransactions] = useState([]);
@@ -11,7 +12,8 @@ function CreditCardPage() {
 	const [importPreview, setImportPreview] = useState(null);
 	const [importing, setImporting] = useState(false);
 	const [importResult, setImportResult] = useState(null);
-	const [creditCardId, setCreditCardId] = useState(''); // future filter/select
+	const [creditCardId, setCreditCardId] = useState('');
+	const [cards, setCards] = useState([]);
 	const [referenceDate, setReferenceDate] = useState(() => new Date().toISOString().slice(0,10));
 
 	async function fetchTransactions() {
@@ -29,6 +31,15 @@ function CreditCardPage() {
 	}
 
 	useEffect(() => { fetchTransactions(); }, [referenceDate, creditCardId]);
+
+	useEffect(() => { // load credit cards once
+		(async () => {
+			try {
+				const data = await listCreditCards();
+				setCards(data.credit_cards || []);
+			} catch (e) { /* ignore for now */ }
+		})();
+	}, []);
 
 	function handleAddClick() {
 		// Placeholder for future modal/creation form
@@ -83,12 +94,17 @@ function CreditCardPage() {
 
 				<div className="filters-row">
 					<div className="filter-item">
-						<label>Data referência</label>
-						<input type="date" value={referenceDate} onChange={e => setReferenceDate(e.target.value)} />
+						<label>Cartão</label>
+						<select value={creditCardId} onChange={e => setCreditCardId(e.target.value)}>
+							<option value="">Todos</option>
+							{cards.map(c => (
+								<option key={c.id} value={c.id}>{c.name}</option>
+							))}
+						</select>
 					</div>
 					<div className="filter-item">
-						<label>Cartão (ID)</label>
-						<input type="text" placeholder="Opcional" value={creditCardId} onChange={e => setCreditCardId(e.target.value)} />
+						<label>Mês</label>
+						<MonthPicker value={referenceDate} onChange={setReferenceDate} />
 					</div>
 				</div>
 

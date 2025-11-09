@@ -50,6 +50,11 @@ export async function getAccountsSummary() {
 	return data; // expect { total_balance, accounts: [...] }
 }
 
+export async function listCreditCards() {
+	const { data } = await api.get("/credit-cards/");
+	return data; // expect { credit_cards: [...] }
+}
+
 // Categories
 export async function listCategories() {
 	const { data } = await api.get("/categories/");

@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .models import Transaction, Category
-from .serializers import TransactionSerializer, CategorySerializer
+from .models import Transaction, Category, CreditCard
+from .serializers import TransactionSerializer, CategorySerializer, CreditCardSerializer
 from .api.transaction_manager import TransactionManager
 from .api import AccountManager
 from .helpers import norm_str
@@ -99,6 +99,14 @@ class AccountsSummaryView(APIView):
             {"id": acc_id, **details} for acc_id, details in accounts.items()
         ]
         return Response({"total_balance": total, "accounts": accounts_list})
+    
+class CreditCardsListView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        # Return user's credit cards as a flat list
+        qs = CreditCard.objects.filter(bank_account__user=request.user).order_by("name")
+        data = CreditCardSerializer(qs, many=True).data
+        return Response({"credit_cards": data})
 
 
 class CreditCardImportView(APIView):

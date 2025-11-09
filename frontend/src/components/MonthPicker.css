@@ -1,0 +1,34 @@
+.mpicker { position: relative; display: inline-flex; flex-direction: column; gap:.25rem; font-size:.85rem; }
+.mpicker-label { font-size:.65rem; font-weight:600; text-transform:uppercase; letter-spacing:.5px; color:#374151; }
+.mpicker-input {
+  display:flex; align-items:center; gap:.5rem;
+  padding:.5rem .65rem; border:1px solid #d1d5db; border-radius:6px; background:#fff;
+  cursor:pointer; min-width:155px; font-weight:500; color:#0f172a; font-size:.8rem;
+  transition:border-color .15s, box-shadow .15s, background .15s;
+}
+.mpicker-input:hover { background:#f8fafc; }
+.mpicker-input.open { outline:2px solid #2563eb33; border-color:#2563eb; }
+.mpicker-input .placeholder { color:#64748b; font-weight:400; }
+.mpicker-input .chev { margin-left:auto; font-size:.65rem; opacity:.6; }
+
+.mpicker-panel { position:absolute; top:105%; left:0; z-index:40; width:230px; background:#fff;
+  border:1px solid #e2e8f0; border-radius:10px; padding:.55rem .7rem .7rem; box-shadow:0 4px 18px -2px rgba(0,0,0,.12),0 2px 6px rgba(0,0,0,.08);
+  animation:fadeSlide .12s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateY(-6px);} to { opacity:1; transform:translateY(0);} }
+
+.mpicker-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.45rem; }
+.mpicker-head .year-label { font-weight:600; color:#1e293b; font-size:.75rem; letter-spacing:.5px; }
+.mpicker-head .nav { background:#f1f5f9; border:1px solid #e2e8f0; cursor:pointer; padding:.25rem .5rem; border-radius:6px; font-size:.75rem; color:#475569; font-weight:600; }
+.mpicker-head .nav:hover { background:#e2e8f0; }
+
+.mpicker-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.4rem; }
+.mpicker-grid .cell { background:#f8fafc; border:1px solid #e2e8f0; padding:.55rem .2rem; border-radius:8px; cursor:pointer;
+  font-size:.7rem; font-weight:600; letter-spacing:.5px; color:#475569; text-transform:uppercase; transition:background .15s, color .15s, border-color .15s; }
+.mpicker-grid .cell:hover { background:#eef2ff; border-color:#cbd5e1; }
+.mpicker-grid .cell.selected { background:#1d4ed8; color:#fff; border-color:#1d4ed8; box-shadow:0 0 0 1px #1d4ed8 inset; }
+.mpicker-grid .cell.selected:hover { background:#1e40af; }
+
+@media (max-width:640px){
+  .mpicker-panel { width:210px; }
+  .mpicker-grid { grid-template-columns:repeat(3,1fr); }
+}
