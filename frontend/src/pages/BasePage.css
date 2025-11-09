@@ -1,0 +1,45 @@
+/* BasePage.css */
+.base-page {
+  min-height: 100vh;
+  display: flex;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-wrapper.shifted {
+  margin-left: 240px; /* width of lateral navbar */
+}
+
+.main-content {
+  margin-top: 64px;  /* height of top navbar */
+  padding: 2rem;
+  flex: 1;
+}
+
+/* Ensure smooth transitions for the navbar and footer */
+.navbar,
+
+.content-wrapper.shifted .navbar,
+.content-wrapper.shifted .footer {
+  margin-left: 0;
+}
+
+@media (max-width: 768px) {
+  .content-wrapper.shifted {
+    margin-left: 0;
+  }
+
+  .main-content {
+    margin-bottom: 60px; /* height of bottom navbar on mobile */
+    padding: 1rem;
+  }
+
+  .lateral-navbar {
+    position: fixed;
+    z-index: 1000;
+  }
+}

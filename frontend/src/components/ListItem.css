@@ -1,0 +1,94 @@
+
+.list-item {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  background: #fff;
+  padding: 18px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(20, 61, 107, 0.08);
+  border: 1.5px solid #eaf4ff;
+  transition: box-shadow 0.2s, border 0.2s;
+}
+.list-item:hover {
+  box-shadow: 0 4px 16px rgba(20, 61, 107, 0.15);
+  border-color: #b3d1f3;
+}
+
+
+.list-item-avatar {
+  width: 140px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid #b3d1f3;
+  background: #eaf4ff;
+}
+
+
+.list-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', 'Georgia', serif, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+
+.list-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+
+.list-item-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #143d6b;
+  font-family: 'Georgia', serif;
+}
+
+
+.list-item-rating {
+  background: #eaf4ff;
+  color: #143d6b;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 600;
+  border: 1.5px solid #b3d1f3;
+}
+
+
+.list-item-meta {
+  color: #1a1a1a;
+  font-size: 0.98rem;
+  margin-bottom: 8px;
+}
+
+
+.list-item-address {
+  color: #143d6b;
+  font-size: 0.95rem;
+}
+
+.list-item-actions {
+  margin-top: 8px;
+}
+
+
+@media (max-width: 800px) {
+  .list-item {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .list-item-avatar {
+    width: 100%;
+    height: 180px;
+    border-radius: 12px;
+  }
+}

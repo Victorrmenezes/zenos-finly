@@ -1,0 +1,67 @@
+
+.list-container {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 16px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(20, 61, 107, 0.08);
+  font-family: 'Segoe UI', 'Georgia', serif, -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+
+
+.list-header {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  color: #143d6b;
+  font-family: 'Georgia', serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(20, 61, 107, 0.08);
+  border: 1.5px solid #eaf4ff;
+  padding: 16px 24px;
+  margin-bottom: 18px;
+}
+
+.list-items {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #b3d1f3 #eaf4ff;
+}
+.list-items::-webkit-scrollbar {
+  width: 8px;
+  background: #eaf4ff;
+  border-radius: 8px;
+}
+.list-items::-webkit-scrollbar-thumb {
+  background: #b3d1f3;
+  border-radius: 8px;
+}
+
+
+@media (min-width: 900px) {
+  .list-items {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
+
+.list-loading,
+.list-error,
+.list-empty {
+  padding: 18px;
+  color: #143d6b;
+  background: #eaf4ff;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 1rem;
+}

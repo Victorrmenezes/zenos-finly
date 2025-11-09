@@ -1,0 +1,26 @@
+.home-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .home-page {
+    grid-template-columns: 1fr;
+  }
+}
+
+.map-section {
+  height: calc(100vh - 48px);
+}
+
+@media (max-width: 1200px) {
+  .map-section {
+    height: 400px;
+    position: relative;
+    top: 0;
+  }
+}
